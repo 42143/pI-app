@@ -1,10 +1,11 @@
 <template>
-  <Page>
+  <Page @loaded="ckeckBluetooth">
     <ActionBar title="Medidor de temperatura" class="action-bar"/>
     <ScrollView>
       <StackLayout class="home-panel p-20">
         <Button class="conectar" :class="{active:conectado}"
-                :text="(conectado) ? 'conectado' : 'conectar via bluetooth'" @tap="connect"/>
+                :text="(conectado) ? 'desconectar' : 'conectar'"
+                @tap="connect"/>
         <StackLayout height="700px">
           <RadRadialGauge>
             <RadialScale v-tkRadialGaugeScales minimum="0"
@@ -56,6 +57,9 @@ import RadGauge from "nativescript-ui-gauge/vue";
 // require the plugin
 import {Bluetooth} from '@nativescript-community/ble';
 
+
+import * as application from "@nativescript/core/application";
+
 var bluetooth = new Bluetooth();
 
 Vue.use(RadGauge);
@@ -66,46 +70,67 @@ export default {
     return {
       gaugeValue: 0,
       enviar: false,
-      conectado: false
+      conectado: false,
+      dispositivos: []
     };
   },
   methods: {
     /**
-     * conectar no blutooth
+     * conectar no bluetooth
      */
-    connect() {
-      bluetooth.enable().then(
-          function(enabled) {
-            this.conectado = enabled;
-
-            // use Bluetooth features if enabled is true
-          }
-      );
+    ckeckBluetooth() {
+      bluetooth.isBluetoothEnabled().then((check) => {
+        if (!check) {
+          console.log('bluetooth não foi ativado');
+          bluetooth.enable().then((enabled) => {
+            switch (enabled) {
+              case true:
+                alert({
+                  title: 'Bluetooth',
+                  message: 'O bluetooth foi ativado',
+                  okButtonText: 'Ok'
+                }).then(() => {
+                  console.log('bluettoth está ligado')
+                })
+                break;
+              case false:
+                alert({
+                  title: 'Bluetooth',
+                  message: 'O bluetooth não foi ativado, app será encerrado',
+                  okButtonText: 'Ok'
+                }).then(() => {
+                  console.log('bluettoth não foi ligado')
+                  application.android.foregroundActivity.finish();
+                })
+            }
+          });
+        }else{
+          console.log('bluetooth ja esta ativado');
+        }
+      });
     },
 
-    // buscando(){
-    //     bluetooth.startScanning({
-    //       filters: [{serviceUUID:'180d'}],
-    //       seconds: 4,
-    //       onDiscovered: function (peripheral) {
-    //         console.log("Periperhal encontrado com UUID:" + peripheral.UUID);
-    //       }
-    //     }).then(function(response) {
-    //
-    //       console.log("digitalização completa" + response);
-    //
-    //     }, function (err) {
-    //       console.log("erro durante a digitalização: " + err);
-    //       this.conectado = false;
-    //     });
-    // },
+    connect() {
+      bluetooth.startScanning({
+        filters: [{serviceUUID: '180d'}, {serviceUUID: '180F'}],
+        seconds: 4,
+        onDiscovered: function (peripheral) {
+          console.log("Periperhal encontrado com UUID:" + peripheral.UUID);
+        }
+      }).then(function (response) {
 
+        console.log("digitalização completa" +  response);
+
+      }, function (err) {
+        console.log("erro durante a digitalização: " + err);
+      });
+    },
     send() {
       console.log("Button was pressed");
       this.gaugeValue = this.gaugeValue + 1 % 7;
       this.enviar = true;
     },
-  },
+  }
 }
 </script>
 <style scoped>
