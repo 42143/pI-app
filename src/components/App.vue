@@ -1,52 +1,48 @@
 <template>
   <Page @loaded="ckeckBluetooth">
     <ActionBar title="Medidor de temperatura" class="action-bar"/>
-    <ScrollView>
-      <StackLayout class="home-panel p-20">
-        <Button class="conectar" :class="{active:conectado}"
-                :text="(conectado) ? 'desconectar' : 'conectar'"
-                @tap="connect"/>
-        <StackLayout height="700px">
-          <RadRadialGauge>
-            <RadialScale v-tkRadialGaugeScales minimum="0"
-                         maximum="60" radius="0.90">
-              <ScaleStyle v-tkRadialScaleStyle majorTicksCount="7"
-                          minorTicksCount="9" lineThickness="0"
-                          labelsCount="7" ticksOffset="0"/>
-              <RadialBarIndicator v-tkRadialScaleIndicators
-                                  minimum="0" maximum="10.2" location="0.97">
-                <BarIndicatorStyle
-                    v-tkRadialBarIndicatorStyle fillColor="#dddddd"/>
-              </RadialBarIndicator>
-              <RadialBarIndicator v-tkRadialScaleIndicators
-                                  minimum="10.2" maximum="20.4" location="0.97">
-                <BarIndicatorStyle
-                    v-tkRadialBarIndicatorStyle fillColor="#9DCA56"/>
-              </RadialBarIndicator>
-              <RadialBarIndicator v-tkRadialScaleIndicators
-                                  minimum="20.4" maximum="30.6" location="0.97">
-                <BarIndicatorStyle
-                    v-tkRadialBarIndicatorStyle fillColor="#F0C44D"/>
-              </RadialBarIndicator>
-              <RadialBarIndicator v-tkRadialScaleIndicators
-                                  minimum="30.6" maximum="40.8" location="0.97">
-                <BarIndicatorStyle
-                    v-tkRadialBarIndicatorStyle fillColor="#E27633"/>
-              </RadialBarIndicator>
-              <RadialBarIndicator v-tkRadialScaleIndicators
-                                  minimum="40.8" maximum="60" location="0.97">
-                <BarIndicatorStyle
-                    v-tkRadialBarIndicatorStyle fillColor="#A7010E"/>
-              </RadialBarIndicator>
-              <RadialNeedle v-tkRadialScaleIndicators :value="gaugeValue"/>
-            </RadialScale>
-          </RadRadialGauge>
-        </StackLayout>
-        <Button class="enviar" :class="{active:enviar}"
-                :text="(enviar) ? 'Enviado' : 'Enviar'" @tap="send"/>
-      </StackLayout>
 
-    </ScrollView>
+    <StackLayout class="home-panel p-20">
+      <Button class="conectar" text="Encontrar" @tap="connect"/>
+      <StackLayout height="700px">
+        <RadRadialGauge>
+          <RadialScale v-tkRadialGaugeScales minimum="0"
+                       maximum="60" radius="0.90">
+            <ScaleStyle v-tkRadialScaleStyle majorTicksCount="7"
+                        minorTicksCount="9" lineThickness="0"
+                        labelsCount="7" ticksOffset="0"/>
+            <RadialBarIndicator v-tkRadialScaleIndicators
+                                minimum="0" maximum="10.2" location="0.97">
+              <BarIndicatorStyle
+                  v-tkRadialBarIndicatorStyle fillColor="#dddddd"/>
+            </RadialBarIndicator>
+            <RadialBarIndicator v-tkRadialScaleIndicators
+                                minimum="10.2" maximum="20.4" location="0.97">
+              <BarIndicatorStyle
+                  v-tkRadialBarIndicatorStyle fillColor="#9DCA56"/>
+            </RadialBarIndicator>
+            <RadialBarIndicator v-tkRadialScaleIndicators
+                                minimum="20.4" maximum="30.6" location="0.97">
+              <BarIndicatorStyle
+                  v-tkRadialBarIndicatorStyle fillColor="#F0C44D"/>
+            </RadialBarIndicator>
+            <RadialBarIndicator v-tkRadialScaleIndicators
+                                minimum="30.6" maximum="40.8" location="0.97">
+              <BarIndicatorStyle
+                  v-tkRadialBarIndicatorStyle fillColor="#E27633"/>
+            </RadialBarIndicator>
+            <RadialBarIndicator v-tkRadialScaleIndicators
+                                minimum="40.8" maximum="60" location="0.97">
+              <BarIndicatorStyle
+                  v-tkRadialBarIndicatorStyle fillColor="#A7010E"/>
+            </RadialBarIndicator>
+            <RadialNeedle v-tkRadialScaleIndicators :value="gaugeValue"/>
+          </RadialScale>
+        </RadRadialGauge>
+      </StackLayout>
+      <Button class="enviar" text="Enviar" @tap="send"/>
+    </StackLayout>
+
   </Page>
 </template>
 
@@ -104,7 +100,7 @@ export default {
                 })
             }
           });
-        }else{
+        } else {
           console.log('bluetooth ja esta ativado');
         }
       });
@@ -119,7 +115,7 @@ export default {
         }
       }).then(function (response) {
 
-        console.log("digitalização completa" +  response);
+        console.log("digitalização completa" + response);
 
       }, function (err) {
         console.log("erro durante a digitalização: " + err);
