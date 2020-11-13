@@ -1,7 +1,6 @@
 <template>
   <Page @loaded="ckeckBluetooth">
     <ActionBar title="Medidor de temperatura" class="action-bar"/>
-
     <StackLayout class="home-panel p-20">
       <Button class="conectar" text="Encontrar" @tap="connect"/>
       <StackLayout height="700px">
@@ -42,7 +41,6 @@
       </StackLayout>
       <Button class="enviar" text="Enviar" @tap="send"/>
     </StackLayout>
-
   </Page>
 </template>
 
@@ -108,16 +106,18 @@ export default {
 
     connect() {
       bluetooth.startScanning({
-        filters: [{serviceUUID: '180d'}, {serviceUUID: '180F'}],
+        filters: [],
+        serviceUUIDs:[],
         seconds: 4,
-        onDiscovered: function (peripheral) {
+        onDiscovered:(peripheral)=>{
           console.log("Periperhal encontrado com UUID:" + peripheral.UUID);
+          console.log(peripheral.name);
         }
-      }).then(function (response) {
+      }).then(()=>{
 
-        console.log("digitalização completa" + response);
+        console.log("digitalização completa");
 
-      }, function (err) {
+      }, (err)=>{
         console.log("erro durante a digitalização: " + err);
       });
     },
