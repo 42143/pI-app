@@ -10,6 +10,8 @@
     "@nativescript/core": "^7.0.3",
     "nativescript-ui-gauge": "^7.0.2",
     "nativescript-vue": "^2.8.1",
+    "nativescript-vuex-persistent": "^1.2.0",
+    "tns-android": "^6.5.3",
     "vuex": "^3.5.1"
   },
   "devDependencies": {

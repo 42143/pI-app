@@ -1,11 +1,18 @@
 <template>
   <Page @loaded="ckeckBluetooth">
-    <ActionBar title="Medidor de temperatura" class="action-bar"/>
-    <StackLayout class="home-panel p-20">
-      <Button class="conectar" :class="{active:isConnect}" text="Encontrar" @tap="connect" v-if=""/>
-      <Button class="conectar stop" :class="{active:isStopConnect}" text="Para a busca"
-              @tap="stopConnect"/>
-      <StackLayout height="700px">
+    <ActionBar title="Lista de dispositivos" class="action-bar">
+      <NavigationButton text="dispositivos" android.systemIcon="ic_menu_back"
+                        @tap="goToPageList"/>
+    </ActionBar>
+
+    <StackLayout class="home-panel">
+      <Button class="btn-primary conectar" :class="{active:isConnect}" text="Encontrar"
+              @tap="connect" v-if=""
+      />
+      <Button class="btn-primary conectar stop" :class="{active:isStopConnect}" text="Stop"
+              @tap="stopConnect"
+      />
+      <StackLayout height="550px">
         <RadRadialGauge>
           <RadialScale v-tkRadialGaugeScales minimum="0"
                        maximum="60" radius="0.90">
@@ -41,7 +48,7 @@
           </RadialScale>
         </RadRadialGauge>
       </StackLayout>
-      <Button class="enviar" text="Enviar" @tap="send"/>
+      <Button class="btn-primary enviar" text="Enviar" @tap="send"/>
     </StackLayout>
   </Page>
 </template>
@@ -60,18 +67,30 @@ var bluetooth = new Bluetooth();
 
 Vue.use(RadGauge);
 
-export default {
+import Lists from './Lists';
+import {mapState, mapMutations, mapGetters} from 'vuex';
 
+export default {
+  computed: mapGetters('modules', ['listDevices']),
   data() {
     return {
       gaugeValue: 0,
       enviar: false,
       isConnect: false,
-      isStopConnect:false,
+      isStopConnect: false,
       dispositivos: []
     };
   },
   methods: {
+    ...mapMutations('modules', ['SET_LIST_OF_ITEMS']),
+
+    /**
+     * navegation page list
+     */
+    goToPageList() {
+      this.$navigateTo(Lists);
+    },
+
     /**
      * conectar no bluetooth
      */
@@ -110,33 +129,42 @@ export default {
     connect() {
       bluetooth.startScanning({
         serviceUUIDs: [],
-        seconds: 10,
+        seconds: 5,
         onDiscovered: (peripheral) => {
-          console.log("Periperhal encontrado com UUID:" + peripheral.UUID);
-          console.log(peripheral.name);
-          this.isConnect=true;
+          console.log("Periperhal encontrado com UUID:" + peripheral.advertismentData.serviceUUIDs);
+          console.log(peripheral.advertismentData.localName);
+          console.log(peripheral.RSSI);
+          this.SET_LIST_OF_ITEMS(peripheral);
+          this.isConnect = true;
         }
       }).then(() => {
 
         console.log("digitalização completa");
-        this.isConnect=false;
-        this.isStopConnect=false;
+        alert({
+          title: 'digitalização completa',
+          message: 'quantidade de dispositivos foi encontrado :' +  this.listDevices.length,
+          okButtonText: 'Ok'
+        }).then(() => {
+          this.$navigateTo(Lists);
+          this.isConnect = false;
+        })
+        this.isStopConnect = false;
 
       }, (err) => {
         console.log("erro durante a digitalização: " + err);
       });
     },
-    stopConnect(){
-      bluetooth.stopScanning().then(()=>{
+    stopConnect() {
+      bluetooth.stopScanning().then(() => {
         console.log("parou scanning");
-        this.isStopConnect=true;
+        this.isStopConnect = true;
       });
     },
 
     send() {
       console.log("Button was pressed");
-      this.gaugeValue=this.gaugeValue + 1 % 7;
-      this.enviar=true;
+      this.gaugeValue = this.gaugeValue + 1 % 7;
+      this.enviar = true;
     },
   }
 }
@@ -149,25 +177,28 @@ export default {
 }
 
 .home-panel {
-  padding-top: 150px;
-  padding-bottom: 150px;
+  padding-top: 100px;
+  padding-bottom: 100px;
 }
 
-.conectar {
+.btn-primary {
   width: 75%;
   border-radius: 99px;
   border-width: 2px;
+  font-weight: bold;
+}
+
+.conectar {
   border-color: #9DCA56;
   color: #9DCA56;
   background-color: #ffffff;
-  font-weight: bold;
-  margin-bottom: 70px;
+  margin-bottom: 100px;
 }
 
-.conectar.stop{
+.conectar.stop {
   color: #A7010E;
   border-color: #A7010E;
-  margin-bottom: 220px;
+  margin-bottom: 50px;
 }
 
 .conectar.active {
@@ -181,14 +212,9 @@ export default {
 }
 
 .enviar {
-  width: 75%;
-  border-radius: 99px;
-  border-width: 2px;
   border-color: #007bff;
   background-color: #fff;
   color: #007bff;
-  font-weight: bold;
-  margin-top: 220px;
 }
 
 .enviar.active {
