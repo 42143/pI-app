@@ -2,7 +2,9 @@
   <Page @loaded="ckeckBluetooth">
     <ActionBar title="Medidor de temperatura" class="action-bar"/>
     <StackLayout class="home-panel p-20">
-      <Button class="conectar" text="Encontrar" @tap="connect"/>
+      <Button class="conectar" :class="{active:isConnect}" text="Encontrar" @tap="connect" v-if=""/>
+      <Button class="conectar stop" :class="{active:isStopConnect}" text="Para a busca"
+              @tap="stopConnect"/>
       <StackLayout height="700px">
         <RadRadialGauge>
           <RadialScale v-tkRadialGaugeScales minimum="0"
@@ -64,7 +66,8 @@ export default {
     return {
       gaugeValue: 0,
       enviar: false,
-      conectado: false,
+      isConnect: false,
+      isStopConnect:false,
       dispositivos: []
     };
   },
@@ -106,25 +109,34 @@ export default {
 
     connect() {
       bluetooth.startScanning({
-        filters: [],
-        serviceUUIDs:[],
-        seconds: 4,
-        onDiscovered:(peripheral)=>{
+        serviceUUIDs: [],
+        seconds: 10,
+        onDiscovered: (peripheral) => {
           console.log("Periperhal encontrado com UUID:" + peripheral.UUID);
           console.log(peripheral.name);
+          this.isConnect=true;
         }
-      }).then(()=>{
+      }).then(() => {
 
         console.log("digitalização completa");
+        this.isConnect=false;
+        this.isStopConnect=false;
 
-      }, (err)=>{
+      }, (err) => {
         console.log("erro durante a digitalização: " + err);
       });
     },
+    stopConnect(){
+      bluetooth.stopScanning().then(()=>{
+        console.log("parou scanning");
+        this.isStopConnect=true;
+      });
+    },
+
     send() {
       console.log("Button was pressed");
-      this.gaugeValue = this.gaugeValue + 1 % 7;
-      this.enviar = true;
+      this.gaugeValue=this.gaugeValue + 1 % 7;
+      this.enviar=true;
     },
   }
 }
@@ -149,11 +161,22 @@ export default {
   color: #9DCA56;
   background-color: #ffffff;
   font-weight: bold;
-  margin-bottom: 300px;
+  margin-bottom: 70px;
+}
+
+.conectar.stop{
+  color: #A7010E;
+  border-color: #A7010E;
+  margin-bottom: 220px;
 }
 
 .conectar.active {
   background-color: #9DCA56;
+  color: #ffffff;
+}
+
+.conectar.stop.active {
+  background-color: #A7010E;
   color: #ffffff;
 }
 
@@ -165,7 +188,7 @@ export default {
   background-color: #fff;
   color: #007bff;
   font-weight: bold;
-  margin-top: 300px;
+  margin-top: 220px;
 }
 
 .enviar.active {
