@@ -4,7 +4,7 @@ export default ({
     },
     getters: {
         listDevices: state => {
-            return state.listOfItems.length;
+            return state.listOfItems;
         }
     },
     mutations: {
