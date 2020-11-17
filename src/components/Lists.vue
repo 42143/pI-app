@@ -16,10 +16,10 @@ import App from './App';
 import {mapState} from 'vuex';
 
 export default {
-  computed: mapState('modules', ['listOfItems']),
+  computed: mapState(['listOfItems']),
   data() {
     return {
-      // listOfItems: ['1s', '2a', '3s']
+
     }
   },
   methods: {

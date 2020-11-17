@@ -68,10 +68,10 @@ var bluetooth = new Bluetooth();
 Vue.use(RadGauge);
 
 import Lists from './Lists';
-import {mapState, mapMutations, mapGetters} from 'vuex';
+import {mapMutations, mapGetters} from 'vuex';
 
 export default {
-  computed: mapGetters('modules', ['listDevices']),
+  computed: mapGetters(['listDevices']),
   data() {
     return {
       gaugeValue: 0,
@@ -82,7 +82,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations('modules', ['SET_LIST_OF_ITEMS']),
+    ...mapMutations(['SET_LIST_OF_ITEMS']),
 
     /**
      * navegation page list
@@ -142,12 +142,11 @@ export default {
         console.log("digitalização completa");
         alert({
           title: 'digitalização completa',
-          message: 'quantidade de dispositivos foi encontrado :' +  this.listDevices.length,
+          message: 'quantidade de dispositivos foi encontrado:' + ':' +this.listDevices,
           okButtonText: 'Ok'
-        }).then(() => {
-          this.$navigateTo(Lists);
-          this.isConnect = false;
-        })
+        });
+
+        this.isConnect = false;
         this.isStopConnect = false;
 
       }, (err) => {
